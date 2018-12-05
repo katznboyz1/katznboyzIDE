@@ -41,14 +41,24 @@ saveTextArea.setStyleSheet(buttonStyleSheetNo1)
 saveTextArea.move(saveButton.width(), saveButton.y())
 saveTextArea.resize(125, saveButton.height())
 
+scroll = QScrollArea(window)
+scroll.setWidgetResizable(True)
+scrollContent = QWidget(scroll)
+scrollLayout = QVBoxLayout(scrollContent)
+scrollContent.setLayout(scrollLayout)
+scroll.setWidget(scrollContent)
+scroll.move(0, saveTextArea.y() + 100)
+scroll.resize(300, (window.height() - scroll.y()))
+
 def makeFB1(topy, currentscandirindex, files):
-    attrb = QPushButton(window)
+    global scrollLayout
+    attrb = QPushButton()
     attrb.setText(files)
     attrb.setStyleSheet('''QPushButton{background-color:#1c1c1c;color:white;border:1px solid black;font-size:15px;}\nQPushButton:hover{background-color:black;color:white;border:1px solid black;font-size:15px;}''')
-    attrb.move(10, (topy + (currentscandirindex * 70)))
-    attrb.setFixedWidth(280)
+    attrb.setFixedWidth(260)
     attrb.setFixedHeight(60)
-    attrb.clicked.connect(lambda: openSelectedFile(filename = files)) #this is being assigned to the last file ;-; ples halp
+    attrb.clicked.connect(lambda: openSelectedFile(filename = files))
+    scrollLayout.addWidget(attrb)
 
 try:
     currentscandirindex = 0
@@ -69,6 +79,8 @@ def openSelectedFile(filename = ''):
         fileo.close()
         mainTextArea.setPlainText(filecontents)
         window.setWindowTitle('KatznboyzIDE - {}'.format(filename))
+        saveTextArea.setPlainText(filename)
+
     except:
         print ('Error opening file')
 
@@ -88,13 +100,13 @@ def main():
     mainTextArea.move(300, 0)
     mainTextArea.setFixedWidth((window.width() - 200))
     mainTextArea.setFixedHeight(window.height())
+    scroll.resize(300, (window.height() - scroll.y()))
 
 thread_variable_lastscreensize = [window.width(), window.height()]
 def thread_func_resizecheckThread():
     global thread_variable_lastscreensize
     while (1):
-        if ([window.width(), window.height()] != thread_variable_lastscreensize):
-            main()
+        main()
         thread_variable_lastscreensize = [window.width(), window.height()]
         
 
